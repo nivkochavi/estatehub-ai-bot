@@ -1,2 +1,22 @@
-flask
-requests
+import requests
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "AI Chatbot Backend Running"
+
+@app.route('/test', methods=['GET'])
+def send_test_webhook():
+    webhook_url = "https://services.leadconnectorhq.com/hooks/OLYIR7b3fRXtFpQpzara/webhook-trigger/3eaf78c5-50ad-4737-be2a-57e4d5f3e324"
+    payload = {
+        "contact_id": "test12345",
+        "ai_generated_reply": "Okay, would it be a good time to talk tomorrow at 2pm?"
+    }
+
+    try:
+        response = requests.post(webhook_url, json=payload)
+        return jsonify({"status": "sent", "response": response.text}), response.status_code
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
